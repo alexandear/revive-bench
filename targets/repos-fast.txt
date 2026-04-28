@@ -1,0 +1,5 @@
+# name repository ref
+revive https://github.com/mgechev/revive.git master
+golangci-lint https://github.com/golangci/golangci-lint.git master
+goreleaser https://github.com/goreleaser/goreleaser.git main
+go-github https://github.com/google/go-github.git master

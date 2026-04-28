@@ -1,0 +1,11 @@
+# name repository ref
+revive https://github.com/mgechev/revive.git master
+golangci-lint https://github.com/golangci/golangci-lint.git master
+goreleaser https://github.com/goreleaser/goreleaser.git main
+hugo https://github.com/gohugoio/hugo.git master
+go-github https://github.com/google/go-github.git master
+gin https://github.com/gin-gonic/gin.git master
+prometheus https://github.com/prometheus/prometheus.git main
+caddy https://github.com/caddyserver/caddy.git master
+grpc-go https://github.com/grpc/grpc-go.git master
+delve https://github.com/go-delve/delve.git master
