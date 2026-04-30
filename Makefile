@@ -12,6 +12,7 @@ ALL_TARGETS_FILE := $(CURDIR)/targets/repos-all.txt
 ISSUES_RESULTS_DIR := $(CURDIR)/results/issues
 RULE_ISSUES_RESULTS_DIR := $(CURDIR)/results/rule-issues
 RULE_ISSUES_CONFIG := $(CURDIR)/configs/rule-issues.toml
+REVIVE_ISSUES_CONFIG := $(CURDIR)/configs/revive-issues.toml
 
 define INSTALL_REVIVE_REF
 	@set -e; \
@@ -123,34 +124,34 @@ issues-compare:
 	@BASE_VER="$$("$(BASE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$BASE_VER" ]]; then BASE_VER="$(BASE_BIN)"; fi; \
 	echo "=== Baseline ($$BASE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/baseline"
+	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/baseline"
 	@echo
 	@CANDIDATE_VER="$$("$(CANDIDATE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$CANDIDATE_VER" ]]; then CANDIDATE_VER="$(CANDIDATE_BIN)"; fi; \
 	echo "=== Candidate ($$CANDIDATE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/candidate"
+	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/candidate"
 
 issues-compare-fast:
 	@BASE_VER="$$("$(BASE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$BASE_VER" ]]; then BASE_VER="$(BASE_BIN)"; fi; \
 	echo "=== Baseline ($$BASE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/baseline"
+	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/baseline"
 	@echo
 	@CANDIDATE_VER="$$("$(CANDIDATE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$CANDIDATE_VER" ]]; then CANDIDATE_VER="$(CANDIDATE_BIN)"; fi; \
 	echo "=== Candidate ($$CANDIDATE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/candidate"
+	@./scripts/count-issues.sh --targets-file "$(FAST_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/fast/candidate"
 
 issues-compare-all:
 	@BASE_VER="$$("$(BASE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$BASE_VER" ]]; then BASE_VER="$(BASE_BIN)"; fi; \
 	echo "=== Baseline ($$BASE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(ALL_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/all/baseline"
+	@./scripts/count-issues.sh --targets-file "$(ALL_TARGETS_FILE)" --revive-bin "$(BASE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/all/baseline"
 	@echo
 	@CANDIDATE_VER="$$("$(CANDIDATE_BIN)" -version 2>/dev/null | head -n1 || true)"; \
 	if [[ -z "$$CANDIDATE_VER" ]]; then CANDIDATE_VER="$(CANDIDATE_BIN)"; fi; \
 	echo "=== Candidate ($$CANDIDATE_VER) ==="
-	@./scripts/count-issues.sh --targets-file "$(ALL_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/all/candidate"
+	@./scripts/count-issues.sh --targets-file "$(ALL_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --config "$(REVIVE_ISSUES_CONFIG)" --details-dir "$(ISSUES_RESULTS_DIR)/all/candidate"
 
 rule-issues:
 	@if [[ -z "$(RULE_REPO)" ]]; then \
