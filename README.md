@@ -186,6 +186,21 @@ Full profile comparison:
 make issues-compare-all
 ```
 
+Compare per-rule issue counts across repeated runs on one repository with `revive-candidate`:
+
+```bash
+make rule-issues RULE_REPO=go-github RULE_RUNS=5
+```
+
+`RULE_REPO` can be either a target name from `targets/src` (for example `go-github`) or an explicit repository path.
+The command uses a dedicated config file [configs/rule-issues.toml](configs/rule-issues.toml), prints a per-rule matrix for each run, and stores raw outputs under [results/rule-issues](results/rule-issues).
+
+To use a different config for this target:
+
+```bash
+make rule-issues RULE_REPO=go-github RULE_RUNS=5 RULE_ISSUES_CONFIG=configs/revive-bench.toml
+```
+
 The output shows a table with issue counts per repository and a total. This helps detect if your changes make revive stricter or looser.
 
 Each run also writes per-repo issue details to text files so you can diff exact findings:

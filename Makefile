@@ -10,6 +10,8 @@ CANDIDATE_BIN := $(BIN_DIR)/revive-candidate
 FAST_TARGETS_FILE := $(CURDIR)/targets/repos-fast.txt
 ALL_TARGETS_FILE := $(CURDIR)/targets/repos-all.txt
 ISSUES_RESULTS_DIR := $(CURDIR)/results/issues
+RULE_ISSUES_RESULTS_DIR := $(CURDIR)/results/rule-issues
+RULE_ISSUES_CONFIG := $(CURDIR)/configs/rule-issues.toml
 
 define INSTALL_REVIVE_REF
 	@set -e; \
@@ -39,7 +41,7 @@ define INSTALL_REVIVE_REF
 	mv "$(BIN_DIR)/revive" "$(2)"
 endef
 
-.PHONY: help setup-targets setup-targets-fast setup-targets-all install-hyperfine install-base install-candidate bench bench-compare bench-fast bench-compare-fast bench-all bench-compare-all issues issues-fast issues-all issues-compare issues-compare-fast issues-compare-all clean
+.PHONY: help setup-targets setup-targets-fast setup-targets-all install-hyperfine install-base install-candidate bench bench-compare bench-fast bench-compare-fast bench-all bench-compare-all issues issues-fast issues-all issues-compare issues-compare-fast issues-compare-all rule-issues clean
 
 help:
 	@echo "Targets:"
@@ -61,6 +63,7 @@ help:
 	@echo "  make issues-compare     Compare baseline vs candidate issue counts (fast)"
 	@echo "  make issues-compare-fast Compare baseline vs candidate issue counts (fast)"
 	@echo "  make issues-compare-all Compare baseline vs candidate issue counts (all)"
+	@echo "  make rule-issues        Compare per-rule issue counts across repeated runs on one repo (candidate only)"
 	@echo "  make clean              Remove local binaries and results"
 
 setup-targets:
@@ -148,6 +151,18 @@ issues-compare-all:
 	if [[ -z "$$CANDIDATE_VER" ]]; then CANDIDATE_VER="$(CANDIDATE_BIN)"; fi; \
 	echo "=== Candidate ($$CANDIDATE_VER) ==="
 	@./scripts/count-issues.sh --targets-file "$(ALL_TARGETS_FILE)" --revive-bin "$(CANDIDATE_BIN)" --details-dir "$(ISSUES_RESULTS_DIR)/all/candidate"
+
+rule-issues:
+	@if [[ -z "$(RULE_REPO)" ]]; then \
+		echo "RULE_REPO is required, e.g. make rule-issues RULE_REPO=go-github RULE_RUNS=5"; \
+		exit 1; \
+	fi
+	@./scripts/compare-rule-issues.sh \
+		--revive-bin "$(CANDIDATE_BIN)" \
+		--repo "$(RULE_REPO)" \
+		--config "$(RULE_ISSUES_CONFIG)" \
+		--runs "$(if $(RULE_RUNS),$(RULE_RUNS),3)" \
+		--details-dir "$(RULE_ISSUES_RESULTS_DIR)"
 
 clean:
 	rm -rf "$(BIN_DIR)" "$(CURDIR)/results"
