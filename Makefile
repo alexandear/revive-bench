@@ -12,7 +12,9 @@ ALL_TARGETS_FILE := $(CURDIR)/targets/repos-all.txt
 ISSUES_RESULTS_DIR := $(CURDIR)/results/issues
 RULE_ISSUES_RESULTS_DIR := $(CURDIR)/results/rule-issues
 RULE_ISSUES_CONFIG := $(CURDIR)/configs/rule-issues.toml
+FUTURE_RULES_CONFIG := $(CURDIR)/configs/future-rules.toml
 REVIVE_ISSUES_CONFIG := $(CURDIR)/configs/revive-issues.toml
+FUTURE_RULES_TARGETS_FILE ?= $(ALL_TARGETS_FILE)
 
 define INSTALL_REVIVE_REF
 	@set -e; \
@@ -42,7 +44,7 @@ define INSTALL_REVIVE_REF
 	mv "$(BIN_DIR)/revive" "$(2)"
 endef
 
-.PHONY: help setup-targets setup-targets-fast setup-targets-all install-hyperfine install-base install-candidate bench bench-compare bench-fast bench-compare-fast bench-all bench-compare-all issues issues-fast issues-all issues-compare issues-compare-fast issues-compare-all rule-issues clean
+.PHONY: help setup-targets setup-targets-fast setup-targets-all install-hyperfine install-base install-candidate bench bench-compare bench-fast bench-compare-fast bench-all bench-compare-all issues issues-fast issues-all issues-compare issues-compare-fast issues-compare-all rule-issues future-rules clean
 
 help:
 	@echo "Targets:"
@@ -65,6 +67,7 @@ help:
 	@echo "  make issues-compare-fast Compare baseline vs candidate issue counts (fast)"
 	@echo "  make issues-compare-all Compare baseline vs candidate issue counts (all)"
 	@echo "  make rule-issues        Compare per-rule issue counts across repeated runs on one repo (candidate only)"
+	@echo "  make future-rules       Check future-rules config over repos with per-repo counts and full issue lines"
 	@echo "  make clean              Remove local binaries and results"
 
 setup-targets:
@@ -164,6 +167,14 @@ rule-issues:
 		--config "$(RULE_ISSUES_CONFIG)" \
 		--runs "$(if $(RULE_RUNS),$(RULE_RUNS),3)" \
 		--details-dir "$(RULE_ISSUES_RESULTS_DIR)"
+
+future-rules:
+	@./scripts/count-issues.sh \
+		--targets-file "$(FUTURE_RULES_TARGETS_FILE)" \
+		--revive-bin "$(BASE_BIN)" \
+		--config "$(FUTURE_RULES_CONFIG)" \
+		--details-dir "$(RULE_ISSUES_RESULTS_DIR)/future-rules" \
+		--print-details
 
 clean:
 	rm -rf "$(BIN_DIR)" "$(CURDIR)/results"

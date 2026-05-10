@@ -201,6 +201,24 @@ To use a different config for this target:
 make rule-issues RULE_REPO=go-github RULE_RUNS=5 RULE_ISSUES_CONFIG=configs/revive-bench.toml
 ```
 
+Check future rules (from [configs/future-rules.toml](configs/future-rules.toml)) across repositories with per-repo counts and full issue lines:
+
+```bash
+make future-rules
+```
+
+By default this uses the all-repos profile. Override the targets file when needed:
+
+```bash
+make future-rules FUTURE_RULES_TARGETS_FILE=targets/repos-fast.txt
+```
+
+To use a different config for this target:
+
+```bash
+make future-rules FUTURE_RULES_CONFIG=configs/rule-issues.toml
+```
+
 The output shows a table with issue counts per repository and a total. This helps detect if your changes make revive stricter or looser.
 
 Each run also writes per-repo issue details to text files so you can diff exact findings:

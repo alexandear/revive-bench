@@ -9,6 +9,7 @@ REVIVE_FORMATTER="${REVIVE_FORMATTER:-unix}"
 
 REVIVE_BIN="${REVIVE_BIN:-}"
 DETAILS_DIR="${DETAILS_DIR:-}"
+PRINT_DETAILS=false
 
 usage() {
   cat <<EOF
@@ -21,6 +22,7 @@ Options:
   --targets-file PATH    Bench targets file (default: $TARGETS_FILE)
   --targets-dir PATH     Cloned targets directory (default: $TARGETS_DIR)
   --details-dir PATH     Write per-repo issue details (*.txt) to this directory
+  --print-details        Print all issue lines grouped by repository
   -h, --help             Show this help
 EOF
 }
@@ -50,6 +52,10 @@ while [[ $# -gt 0 ]]; do
     --details-dir)
       DETAILS_DIR="$2"
       shift 2
+      ;;
+    --print-details)
+      PRINT_DETAILS=true
+      shift
       ;;
     -h|--help)
       usage
@@ -85,6 +91,11 @@ fi
 
 if [[ -n "$DETAILS_DIR" ]]; then
   mkdir -p "$DETAILS_DIR"
+fi
+
+if [[ "$PRINT_DETAILS" == true && -z "$DETAILS_DIR" ]]; then
+  DETAILS_DIR="$(mktemp -d)"
+  trap 'rm -rf "$DETAILS_DIR"' EXIT
 fi
 
 count_issues_for_target() {
@@ -135,4 +146,29 @@ count_issues_for_target() {
 
   echo
   echo "Total: $total_issues issues"
+
+  if [[ "$PRINT_DETAILS" == true ]]; then
+    echo
+    echo "# revive issue details"
+    while read -r name repo ref; do
+      if [[ -z "${name:-}" ]] || [[ "$name" == "#"* ]]; then
+        continue
+      fi
+
+      echo
+      echo "## $name"
+
+      details_file="$DETAILS_DIR/${name}.txt"
+      if [[ ! -f "$details_file" ]]; then
+        echo "(missing details output)"
+        continue
+      fi
+
+      if grep -qve '^[[:space:]]*$' "$details_file"; then
+        sed '/^[[:space:]]*$/d' "$details_file"
+      else
+        echo "(no issues)"
+      fi
+    done <"$TARGETS_FILE"
+  fi
 }
